@@ -6,6 +6,8 @@ import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NewsPage from "./pages/NewPage";
+import NewsListPage from "./pages/NewsListPage";
+import ContactPage from "./pages/ContactPage";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,19 @@ const router = createBrowserRouter([
         element: <AboutPage />,
       },
       {
-        path: "/new/:id",
+        path: "/news",
+        element: <NewsListPage />,
+        loader: async () => {
+          const response = await fetch(
+            `http://jsonplaceholder.typicode.com/posts/`
+          );
+          const data = await response.json();
+          return { data: data };
+        },
+      },
+
+      {
+        path: "/news/:id",
         element: <NewsPage />,
         loader: async ({ params }) => {
           const response = await fetch(
@@ -32,6 +46,18 @@ const router = createBrowserRouter([
             id: params.id,
             title: data.title,
             body: data.body,
+          };
+        },
+      },
+      {
+        path: "/contact",
+        element: <ContactPage />,
+        action: async ({ request }) => {
+          const formData = await request.formData();
+          const fullname = formData.get("fullname");
+          return {
+            id: 1000,
+            fullname: fullname,
           };
         },
       },
